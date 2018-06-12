@@ -1,0 +1,5 @@
+.gradle
+build/
+.idea/
+local.properties
+android_rtsp_example.iml
