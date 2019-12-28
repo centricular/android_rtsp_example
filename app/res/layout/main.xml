@@ -42,4 +42,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|center_horizontal" />
 
+    <EditText
+        android:id="@+id/rtsp_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov" />
+
 </LinearLayout>

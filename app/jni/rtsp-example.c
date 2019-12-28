@@ -156,7 +156,9 @@ static void *app_function (void *userdata) {
   g_main_context_push_thread_default(data->context);
 
   /* Build pipeline */
-  data->pipeline = gst_parse_launch("playbin uri=rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov audio-sink=fakesink", &error);
+    data->pipeline = gst_parse_launch(
+            "rtspsrc location=rtsp://184.72.239.149/vod/mp4:BigBuckBunny_115k.mov name=rtspsource ! decodebin ! autovideosink",
+            &error);
   if (error) {
     gchar *message = g_strdup_printf("Unable to build pipeline: %s", error->message);
     g_clear_error (&error);
@@ -236,10 +238,14 @@ static void gst_native_finalize (JNIEnv* env, jobject thiz) {
 }
 
 /* Set pipeline to PLAYING state */
-static void gst_native_play (JNIEnv* env, jobject thiz) {
+static void gst_native_play (JNIEnv* env, jobject thiz, jstring rtsp) {
   CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
   if (!data) return;
   GST_DEBUG ("Setting state to PLAYING");
+  set_ui_message((*env)->GetStringUTFChars(env, rtsp, (jboolean *) 0), data);
+  GstElement *rtspsrc;
+  rtspsrc = gst_bin_get_by_name(GST_BIN(data->pipeline), "rtspsource");
+  g_object_set(rtspsrc, "location", (*env)->GetStringUTFChars(env, rtsp, (jboolean *) 0), NULL);
   gst_element_set_state (data->pipeline, GST_STATE_PLAYING);
 }
 
@@ -311,7 +317,7 @@ static void gst_native_surface_finalize (JNIEnv *env, jobject thiz) {
 static JNINativeMethod native_methods[] = {
   { "nativeInit", "()V", (void *) gst_native_init},
   { "nativeFinalize", "()V", (void *) gst_native_finalize},
-  { "nativePlay", "()V", (void *) gst_native_play},
+  { "nativePlay", "(Ljava/lang/String;)V", (void *) gst_native_play},
   { "nativePause", "()V", (void *) gst_native_pause},
   { "nativeSurfaceInit", "(Ljava/lang/Object;)V", (void *) gst_native_surface_init},
   { "nativeSurfaceFinalize", "()V", (void *) gst_native_surface_finalize},

@@ -1,4 +1,4 @@
-package org.freedesktop.gstreamer.rtsp_example;
+package org.freedesktop.gstreamer;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.freedesktop.gstreamer.GStreamer;
@@ -16,7 +17,7 @@ import org.freedesktop.gstreamer.GStreamer;
 public class RTSPExample extends Activity implements SurfaceHolder.Callback {
     private native void nativeInit();     // Initialize native code, build pipeline, etc
     private native void nativeFinalize(); // Destroy pipeline and shutdown native code
-    private native void nativePlay();     // Set pipeline to PLAYING
+    private native void nativePlay(String rtsp);     // Set pipeline to PLAYING
     private native void nativePause();    // Set pipeline to PAUSED
     private static native boolean nativeClassInit(); // Initialize native class: cache Method IDs for callbacks
     private native void nativeSurfaceInit(Object surface);
@@ -43,10 +44,11 @@ public class RTSPExample extends Activity implements SurfaceHolder.Callback {
         setContentView(R.layout.main);
 
         ImageButton play = (ImageButton) this.findViewById(R.id.button_play);
+        EditText rtsp_url = (EditText)findViewById(R.id.rtsp_url);
         play.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 is_playing_desired = true;
-                nativePlay();
+                nativePlay(rtsp_url.getText().toString());
             }
         });
 
@@ -103,7 +105,8 @@ public class RTSPExample extends Activity implements SurfaceHolder.Callback {
         Log.i ("GStreamer", "Gst initialized. Restoring state, playing:" + is_playing_desired);
         // Restore previous playing state
         if (is_playing_desired) {
-            nativePlay();
+            EditText rtsp = (EditText)findViewById(R.id.rtsp_url);
+            nativePlay(rtsp.getText().toString());
         } else {
             nativePause();
         }
